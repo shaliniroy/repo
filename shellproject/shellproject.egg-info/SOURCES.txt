@@ -1,0 +1,10 @@
+MANIFEST.in
+README
+__init__.py
+setup.py
+shellproject
+shellproject.egg-info/PKG-INFO
+shellproject.egg-info/SOURCES.txt
+shellproject.egg-info/dependency_links.txt
+shellproject.egg-info/requires.txt
+shellproject.egg-info/top_level.txt
