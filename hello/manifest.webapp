@@ -1,9 +1,9 @@
 {
     "name": "Hello World",
     "description": "Yet another Hello, World app!",
-    "launch_path": "http://m.facebook.com/",
+    "launch_path": "https://github.com/shaliniroy/repo/blob/master/hello/manifest.webapp",
     "icons": {
-     "128": "./icons.png"
+     "128": "https://cdn4.iconfinder.com/data/icons/very_emotional_emoticons_lazy/128x128/128%20(10).png"
     },
     "developer": {
       "name": "Shalini Roy",
