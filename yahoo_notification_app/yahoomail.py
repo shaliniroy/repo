@@ -2,6 +2,10 @@ import cookielib, urllib2
 import urllib
 from bs4 import BeautifulSoup
 import pynotify
+import sys
+import os
+
+a = os.path.join(sys.path[0], 'logo.jpg')
 
 LoginUrl="https://login.yahoo.com/config/login?"
 ExportUrl="https://in-mg61.mail.yahoo.com/neo/b/launch?"
@@ -19,9 +23,8 @@ n = n.split(')')[0].lstrip('(')
 n = int(n)
 title = "Notification"
 text  = "You have %d unread mail in your yahoo account" % n
+icon  = a
 pynotify.init("Test Application")
-notification = pynotify.Notification(title, text)
+notification = pynotify.Notification(title, text, icon)
 notification.set_urgency(pynotify.URGENCY_NORMAL)
 notification.show()
-
-
