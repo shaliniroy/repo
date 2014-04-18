@@ -5,12 +5,34 @@ import pynotify
 import sys
 import os
 import dbus
+import ConfigParser
 
 a = os.path.join(sys.path[0], 'logo.jpg')
+b = os.path.join(sys.path[0], 'config.ini')
+
+Config = ConfigParser.ConfigParser()
+Config.read(b)
+
+def ConfigSectionMap(section):
+    dict1 = {}
+    options = Config.options(section)
+    for option in options:
+        try:
+            dict1[option] = Config.get(section, option)
+            if dict1[option] == -1:
+                DebugPrint("skip: %s" % option)
+        except:
+            print("exception on %s!" % option)
+            dict1[option] = None
+    return dict1
+
+
+Email = ConfigSectionMap("SectionOne")['email']
+Password = ConfigSectionMap("SectionOne")['password']
 
 LoginUrl="https://login.yahoo.com/config/login?"
 ExportUrl="https://in-mg61.mail.yahoo.com/neo/b/launch?"
-form_data = {'login':'example@yahoo.com/in', 'passwd':'your password'}
+form_data = {'login':Email, 'passwd':Password}
 form_data = urllib.urlencode(form_data)
 jar = cookielib.CookieJar()
 opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(jar))
