@@ -1,7 +1,6 @@
 import cookielib, urllib2
 import urllib
 from bs4 import BeautifulSoup
-import pynotify
 import sys
 import os
 import dbus
