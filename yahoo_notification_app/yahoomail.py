@@ -1,16 +1,27 @@
-import cookielib, urllib2
-import urllib
-from bs4 import BeautifulSoup
-import sys
 import os
+import sys
 import dbus
+import urllib
+import urllib2
+import cookielib
 import ConfigParser
+from bs4 import BeautifulSoup
 
-a = os.path.join(sys.path[0], 'logo.jpg')
-b = os.path.join(sys.path[0], 'config.ini')
 
-Config = ConfigParser.ConfigParser()
-Config.read(b)
+LoginUrl="https://login.yahoo.com/config/login?"
+ExportUrl="https://in-mg61.mail.yahoo.com/neo/b/launch?"
+
+
+item              = "org.freedesktop.Notifications"
+path              = "/org/freedesktop/Notifications"
+interface         = "org.freedesktop.Notifications"
+app_name          = "Yahoo Plugin"
+id_num_to_replace = 0
+title             = "Yahoo Mail"
+actions_list      = ''
+hint              = ''
+time              = 5000   # Use seconds x 1000
+
 
 def ConfigSectionMap(section):
     dict1 = {}
@@ -26,36 +37,43 @@ def ConfigSectionMap(section):
     return dict1
 
 
-Email = ConfigSectionMap("SectionOne")['email']
-Password = ConfigSectionMap("SectionOne")['password']
+class yahoo:
+    def __init__(self, Email, Passsword):
+	self.login(Email, Password)
 
-LoginUrl="https://login.yahoo.com/config/login?"
-ExportUrl="https://in-mg61.mail.yahoo.com/neo/b/launch?"
-form_data = {'login':Email, 'passwd':Password}
-form_data = urllib.urlencode(form_data)
-jar = cookielib.CookieJar()
-opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(jar))
-resp = opener.open(LoginUrl, form_data)
-resp = opener.open(ExportUrl)
-page = resp.read()
-soup = BeautifulSoup(page)
-n = soup.em.b.string
-n = str(n)
-n = n.split(')')[0].lstrip('(')
-n = int(n)
-item              = "org.freedesktop.Notifications"
-path              = "/org/freedesktop/Notifications"
-interface         = "org.freedesktop.Notifications"
-app_name          = "Test Application"
-id_num_to_replace = 0
-icon              = a
-title             = "Yahoo Mail"
-text              = "You have %d unread mail in your yahoo account" % n
-actions_list      = ''
-hint              = ''
-time              = 5000   # Use seconds x 1000
+    def login(self, Email, Password):
+        form_data = {'login':Email, 'passwd':Password}
+        form_data = urllib.urlencode(form_data)
+        jar = cookielib.CookieJar()
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(jar))
+        resp = opener.open(LoginUrl, form_data)
+        resp = opener.open(ExportUrl)
+        page = resp.read()
+        self.parsing(page)
 
-bus = dbus.SessionBus()
-notif = bus.get_object(item, path)
-notify = dbus.Interface(notif, interface)
-notify.Notify(app_name, id_num_to_replace, icon, title, text, actions_list, hint, time)
+    def parsing(self, page):
+        soup = BeautifulSoup(page)
+        number = soup.em.b.string
+        number = str(number)
+        number = number.split(')')[0].lstrip('(')
+        number = int(number)
+        self.show_popup(number)
+
+    def show_popup(self, number):
+        icon = os.path.join(sys.path[0], 'logo.jpg')
+        text = "You have %d unread mail" % number
+        bus = dbus.SessionBus()
+        notif = bus.get_object(item, path)
+        notify = dbus.Interface(notif, interface)
+        notify.Notify(app_name, id_num_to_replace, icon, title, text, actions_list, hint, time)
+
+if __name__ == '__main__':
+    while True:
+        config_path = os.path.join(sys.path[0], 'config.ini')
+        Config = ConfigParser.ConfigParser()
+        Config.read(config_path)
+        Email = ConfigSectionMap("SectionOne")['email']
+        Password = ConfigSectionMap("SectionOne")['password']
+        d = yahoo(Email, Password)
+
+
