@@ -36,6 +36,14 @@ def ConfigSectionMap(section):
             dict1[option] = None
     return dict1
 
+def checkConnection():
+    try:
+        urllib2.urlopen("http://www.google.com").close()
+    except urllib2.URLError:
+        return False
+    else:
+        return True
+
 
 class yahoo:
     def __init__(self, Email, Passsword):
@@ -69,11 +77,15 @@ class yahoo:
 
 if __name__ == '__main__':
     while True:
-        config_path = os.path.join(sys.path[0], 'config.ini')
-        Config = ConfigParser.ConfigParser()
-        Config.read(config_path)
-        Email = ConfigSectionMap("SectionOne")['email']
-        Password = ConfigSectionMap("SectionOne")['password']
-        d = yahoo(Email, Password)
-
+        isConnected = checkConnection()
+        if(isConnected == False):
+            print "No internet connection"
+        else:
+            print "You are connected to the internet"
+            config_path = os.path.join(sys.path[0], 'config.ini')
+            Config = ConfigParser.ConfigParser()
+            Config.read(config_path)
+            Email = ConfigSectionMap("SectionOne")['email']
+            Password = ConfigSectionMap("SectionOne")['password']
+            d = yahoo(Email, Password)
 
